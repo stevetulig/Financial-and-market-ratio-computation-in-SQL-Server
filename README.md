@@ -7,4 +7,4 @@ This is the first step of a much larger research project I commenced in 2014 to 
 5) Dashboard-type application to allow for variations in research design
 6) Searching for profitable trading strategies using machine-learning algorithms
 
-This repository contains SQL statements, including stored procedures, to compute financial & market ratios and store the output in 2 output tables in a form more suitable for the following steps. Further details to understand the SQL statements in this repository (e.g. table schemas, data description) is in the word document "Further informtion".
+This repository contains SQL statements, including stored procedures, to compute financial & market ratios and store the output in 2 output tables in a form more suitable for the following steps. Further details to understand the SQL statements in this repository (e.g. table schemas, data description) is in the PDF "Further informtion".
