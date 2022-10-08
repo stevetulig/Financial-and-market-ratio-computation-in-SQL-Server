@@ -25,7 +25,7 @@ drop table if exists outputTable
 select StockID, ReportMonth, ReportYear, cast(Null as float) as B_P, cast(Null as float) as E_P,
 	cast(Null as float) as ROE, cast(Null as float) as D_A, cast(Null as float) as CFO_A,
 	cast(Null as float) as CFI_A, cast(Null as float) as CFF_A,
-	cast(Null as float) as SLOAN, cast(Null as float) as EBITDA_EV
+	cast(Null as float) as ACCRUALS, cast(Null as float) as EBITDA_EV
 	into outputTable
 	from Financials group by StockID, ReportMonth, ReportYear
 create unique index idx1 on outputTable (StockID, ReportMonth, ReportYear)
@@ -82,31 +82,23 @@ exec calcFinancialRatio 'CFF_A', 'Net Financing Cashflows', 'Total Assets'
 update outputTable set CFF_A=1 where CFF_A>1
 update outputTable set CFF_A=-1 where CFF_A<-1
 
--- The "Sloan" Ratio = (NPAT-CFO-CFI)/TA
--- if Net operating cashflows is Null bad data is assumed
--- Net investing cashflows could easily be Null if no noncurrent asset purchases or sales
-with sloan_cte (StockID, ReportMonth, ReportYear, SLOAN) as
+-- Accruals = (NPAT-CFO)/TA
+with ACCRUALS_cte (StockID, ReportMonth, ReportYear, ACCRUALS) as
 (
 select n.StockID, n.ReportMonth, n.ReportYear,
-(n.ItemValue-cfo.ItemValue+isnull(cfi.ItemValue,0))/ta.ItemValue
-from
-(
-Financials n inner join Financials ta
+(n.ItemValue-cfo.ItemValue)/ta.ItemValue
+from Financials n inner join Financials ta
 on n.StockID=ta.StockID and n.ReportMonth=ta.ReportMonth
 and n.ReportYear=ta.ReportYear
 and n.Item='Net Profit after Tax Before Abnormals' and ta.Item='Total Assets'
 inner join Financials cfo
 on n.StockID=cfo.StockID and n.ReportMonth=cfo.ReportMonth
 and n.ReportYear=cfo.ReportYear and cfo.Item='Net Operating Cashflows'
-)
-left join Financials cfi
-on n.StockID=cfi.StockID and n.ReportMonth=cfi.ReportMonth
-and n.ReportYear=cfi.ReportYear and cfi.Item='Net Investing Cashflows'
 where ta.ItemValue<>0
 )
-update o set o.SLOAN=s.SLOAN
-from outputTable o inner join sloan_cte s
-on o.StockID=s.StockID and o.ReportMonth=s.ReportMonth and o.ReportYear=s.ReportYear
+update o set o.ACCRUALS=a.ACCRUALS
+from outputTable o inner join ACCRUALS_cte a
+on o.StockID=a.StockID and o.ReportMonth=a.ReportMonth and o.ReportYear=a.ReportYear
 
 --EBITDA / Enterprise Value
 with ev_cte (StockID, ReportMonth, ReportYear, EBITDA_EV) as
