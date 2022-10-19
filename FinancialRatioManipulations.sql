@@ -127,15 +127,19 @@ declare @rebalanceDate datetime
 set @y=2000
 while @y<2013
 	begin
-		set @rebalanceDate=DATEFROMPARTS(@y,12,31)
-		insert financialRefDates (StockID, rebalanceDate, reportDate)
-			select StockID, @rebalanceDate, max(ReportDate) as ReportDate
-			from financialReportDates
-			where datediff(m, ReportDate, @rebalanceDate) between 3 and 15
+		set @rebalanceDate=DATEFROMPARTS(@y,12,31);
+		with findates_cte (s, d1) as
+		(
+		select StockID, max(datefromparts(ReportYear+1900,ReportMonth,1)) from Financials
+			where DATEDIFF(m, DATEFROMPARTS(ReportYear+1900,ReportMonth,1), DATEFROMPARTS(@y,12,31)) between 3 and 14
+			and AnnInt='A'
 			group by StockID
+		)
+		insert financialRefDates (StockID, rebalanceDate, reportDate)
+			select s, @rebalanceDate, DATEADD(d,-1,DATEADD(m,1,d1))
+			from findates_cte
 		set @y=@y+1
 	end
-
 
 /*
 end of script
