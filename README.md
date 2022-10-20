@@ -78,7 +78,7 @@ StockID | int | NO
 PriceDate | datetime | NO
 AccumIndex | decimal | YES
 
-The ratios calculated from the above data are Liquidity, Ranking by market capitalisation, 6-month momentum and 12-month momentum. Another “ratio” is Distance-to-default which is calculated from both ASX data and financial statement data. Liquidity is calculated in the script calcLiquidity.sql. Distance-to-default is calculated using Python with the code available in [this repository](). All of the other ratios are calculated in the MarketBasedRatioManipulations.sql script. Only the month-end values of the market-based ratios are retained. Each stock therefore has (a maximum of) 12 market-based data points each year, compared with 1 data point per year for the financial ratio data points.
+The ratios calculated from the above data are Liquidity, Ranking by market capitalisation, 6-month momentum and 12-month momentum. Another “ratio” is Distance-to-default which is calculated from both ASX data and financial statement data. Liquidity is calculated in the script calcLiquidity.sql. Distance-to-default is calculated using Python with the code available in [this repository](https://github.com/stevetulig/distance-to-default-calculation-in-python). All of the other ratios are calculated in the MarketBasedRatioManipulations.sql script. Only the month-end values of the market-based ratios are retained. Each stock therefore has (a maximum of) 12 market-based data points each year, compared with 1 data point per year for the financial ratio data points.
 The market-based ratios (1 data point per month) are compiled into the “outputTableMktBased” table, which has the following columns:
 column_name	| data_type	| is_nullable
 ---|---|---
