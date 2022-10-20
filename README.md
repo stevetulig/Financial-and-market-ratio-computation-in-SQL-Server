@@ -43,3 +43,50 @@ CFI_A | float | YES
 CFF_A | float | YES
 ACCRUALS | float | YES
 EBITDA_EV | float | YES
+
+Calculation of ratios from ASX market data
+------------------------------------------
+Other ratios are based on ASX market data which comprises daily stock prices, trading volume, market capitalisation and number of shares. These ratios are stored in the outputTableMktBased table, and all except two of these ratios are calculated in the MarketBasedRatioManipulation.sql script. The raw data is stored in the “Daily_prices” table with the following columns:
+
+column_name	| data_type	| is_nullable
+---|---|---
+StockID | int | NO
+PriceDate | datetime | NO
+Open | float | YES
+High | float | YES
+Low | float | YES
+Close | float | YES
+AdjOpen | float | YES
+AdjHigh | float | YES
+AdjLow | float | YES
+AdjClose | float | YES
+Volume | int | YES
+MarketCap | float | YES
+Shares | float | YES
+
+Use is also made of the “tradingdays” table which has the following columns:
+column_name	| data_type	| is_nullable
+---|---|---
+PriceDate | datetime2 | NO
+EOM | smallint | NO
+DateOffset | int| NO
+
+Use is also made of the “stockaccumindex” table which has the following columns:
+column_name	| data_type	| is_nullable
+---|---|---
+StockID | int | NO
+PriceDate | datetime | NO
+AccumIndex | decimal | YES
+
+The ratios calculated from the above data are Liquidity, Ranking by market capitalisation, 6-month momentum and 12-month momentum. Another “ratio” is Distance-to-default which is calculated from both ASX data and financial statement data. Liquidity is calculated in the script calcLiquidity.sql. Distance-to-default is calculated using Python with the code available in [this repository](). All of the other ratios are calculated in the MarketBasedRatioManipulations.sql script. Only the month-end values of the market-based ratios are retained. Each stock therefore has (a maximum of) 12 market-based data points each year, compared with 1 data point per year for the financial ratio data points.
+The market-based ratios (1 data point per month) are compiled into the “outputTableMktBased” table, which has the following columns:
+column_name	| data_type	| is_nullable
+---|---|---
+StockID | int | NO
+monthEnd | datetime | NO
+MOM6 | float | YES
+MOM12 | float | YES
+LIQ | float | YES
+MCR | float | YES
+DD | float | YES
+
