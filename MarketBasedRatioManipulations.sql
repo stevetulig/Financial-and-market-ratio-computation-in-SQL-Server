@@ -84,7 +84,7 @@ from outputTableMktBased o inner join mcr_cte m
 on o.StockID=m.StockID and o.monthEnd=m.PriceDate
 
 --Distance to default, previously calculated using Python and stored in the table DD;
---see ...
+--see https://github.com/stevetulig/distance-to-default-calculation-in-python
 update o set o.DD=d.DD
 from outputTableMktBased o inner join DD d
 on o.StockID=d.StockID and year(o.monthEnd)=d.[Year] and month(o.monthEnd)=12
